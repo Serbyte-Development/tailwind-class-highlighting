@@ -1,0 +1,11 @@
+.github/**
+benchmarks/**
+src/**
+tests/**
+**/*.map
+.gitignore
+.vscodeignore
+esbuild.mjs
+tsconfig.json
+.prettierrc*
+package-lock.json

@@ -1,0 +1,118 @@
+{
+  "name": "tailwind-highlight",
+  "displayName": "Tailwind Highlight",
+  "description": "Fast semantic highlighting for Tailwind CSS utility classes.",
+  "version": "0.1.0",
+  "publisher": "serbyte",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "highlight",
+    "syntax",
+    "utilities"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "extensionKind": [
+    "workspace"
+  ],
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "bench": "vitest bench --run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "package": "npm run build && vsce package --target darwin-arm64 --allow-missing-repository --out dist/tailwind-highlight-darwin-arm64.vsix"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Tailwind Highlight",
+      "properties": {
+        "tailwindHighlight.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Tailwind utility highlighting."
+        },
+        "tailwindHighlight.languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "html",
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact",
+            "vue",
+            "svelte",
+            "astro",
+            "php",
+            "blade"
+          ],
+          "description": "VS Code language IDs where highlighting is enabled."
+        },
+        "tailwindHighlight.classAttributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "class",
+            "className",
+            "ngClass",
+            "class:list",
+            ":class",
+            "v-bind:class"
+          ],
+          "description": "Attribute names whose values may contain Tailwind classes."
+        },
+        "tailwindHighlight.classFunctions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "clsx",
+            "classnames",
+            "cn",
+            "cva",
+            "twMerge",
+            "tw(?:\\.[A-Za-z_$][\\w$-]*)?"
+          ],
+          "description": "Regular-expression patterns for functions or tagged templates that contain Tailwind classes."
+        },
+        "tailwindHighlight.debounceMs": {
+          "type": "number",
+          "default": 25,
+          "minimum": 0,
+          "maximum": 250,
+          "description": "Delay before rescanning after an edit."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@tailwindcss/oxide": "4.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/vscode": "1.95.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.2",
+    "prettier": "^3.9.6",
+    "typescript": "^6.0.3",
+    "vitest": "4.1.10"
+  }
+}
