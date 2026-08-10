@@ -1,42 +1,42 @@
 import * as vscode from 'vscode'
-import { highlightGroups, type HighlightGroup, type HighlightSpan } from '../core/types'
+import type { HighlightGroup, HighlightSpan } from '../core/types'
 
-const palette: Record<HighlightGroup, { dark: string; light: string }> = {
-  variant: { dark: '#56B6C2', light: '#007C91' },
-  layout: { dark: '#C678DD', light: '#7B2CBF' },
-  flexGrid: { dark: '#D19A66', light: '#A04B00' },
-  spacing: { dark: '#61AFEF', light: '#005FB8' },
-  sizing: { dark: '#4EC9B0', light: '#087F5B' },
-  typography: { dark: '#E5C07B', light: '#8A6200' },
-  color: { dark: '#E06C75', light: '#B4232A' },
-  border: { dark: '#98C379', light: '#4D7C0F' },
-  effects: { dark: '#D16DFF', light: '#8E24AA' },
-  motion: { dark: '#F78C6C', light: '#C2410C' },
-  interactivity: { dark: '#ABB2BF', light: '#4B5563' },
-  accessibility: { dark: '#7F848E', light: '#6B7280' },
+type RenderGroup = 'variantResponsive' | 'variant' | 'utility'
+
+const renderGroups: RenderGroup[] = ['variantResponsive', 'variant', 'utility']
+
+function renderGroupFor(group: HighlightGroup): RenderGroup {
+  if (group === 'variantResponsive') return 'variantResponsive'
+  if (group === 'variant') return 'variant'
+  return 'utility'
 }
 
 export class DecorationRenderer implements vscode.Disposable {
-  private decorations = new Map<HighlightGroup, vscode.TextEditorDecorationType>()
-  private signatures = new WeakMap<vscode.TextEditor, Map<HighlightGroup, string>>()
+  private decorations = new Map<RenderGroup, vscode.TextEditorDecorationType>()
+  private signatures = new WeakMap<vscode.TextEditor, Map<RenderGroup, string>>()
 
   constructor() {
-    for (const group of highlightGroups) {
-      const colors = palette[group]
-      this.decorations.set(
-        group,
-        vscode.window.createTextEditorDecorationType({
-          dark: { color: colors.dark },
-          light: { color: colors.light },
-        }),
-      )
-    }
+    this.decorations.set(
+      'variantResponsive',
+      vscode.window.createTextEditorDecorationType({ color: '#51FFFF' }),
+    )
+    this.decorations.set(
+      'variant',
+      vscode.window.createTextEditorDecorationType({ color: '#2DF3AC' }),
+    )
+    this.decorations.set(
+      'utility',
+      vscode.window.createTextEditorDecorationType({
+        borderStyle: 'dashed',
+        borderWidth: '0 0 1px 0',
+      }),
+    )
   }
 
   apply(editor: vscode.TextEditor, spans: HighlightSpan[]): void {
-    const grouped = new Map<HighlightGroup, HighlightSpan[]>()
-    for (const group of highlightGroups) grouped.set(group, [])
-    for (const span of spans) grouped.get(span.group)?.push(span)
+    const grouped = new Map<RenderGroup, HighlightSpan[]>(renderGroups.map((group) => [group, []]))
+
+    for (const span of spans) grouped.get(renderGroupFor(span.group))!.push(span)
 
     let editorSignatures = this.signatures.get(editor)
     if (!editorSignatures) {
@@ -44,8 +44,8 @@ export class DecorationRenderer implements vscode.Disposable {
       this.signatures.set(editor, editorSignatures)
     }
 
-    for (const group of highlightGroups) {
-      const groupSpans = grouped.get(group) ?? []
+    for (const group of renderGroups) {
+      const groupSpans = grouped.get(group)!
       const signature = groupSpans.map((span) => `${span.start}:${span.end}`).join(',')
       if (editorSignatures.get(group) === signature) continue
 

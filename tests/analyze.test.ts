@@ -24,7 +24,7 @@ describe('analyzeText', () => {
 
     expect(highlighted).toContainEqual({ value: 'flex', group: 'flexGrid' })
     expect(highlighted).toContainEqual({ value: 'gap-2', group: 'spacing' })
-    expect(highlighted).toContainEqual({ value: 'md:', group: 'variant' })
+    expect(highlighted).toContainEqual({ value: 'md:', group: 'variantResponsive' })
     expect(highlighted).toContainEqual({ value: 'hover:', group: 'variant' })
     expect(highlighted).toContainEqual({ value: 'bg-red-500/50', group: 'color' })
     expect(highlighted).toContainEqual({ value: 'w-[calc(100%-2rem)]', group: 'sizing' })

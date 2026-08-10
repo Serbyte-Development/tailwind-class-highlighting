@@ -10,6 +10,10 @@ export interface AnalyzeOptions extends RegionOptions {
   extension: string
 }
 
+function isResponsiveVariant(variant: string): boolean {
+  return /^(?:sm|md|lg|xl|2xl|(?:min|max)-|@)/.test(variant)
+}
+
 interface BufferRegion {
   bufferStart: number
   bufferEnd: number
@@ -97,10 +101,11 @@ export function analyzeText(text: string, options: AnalyzeOptions): HighlightSpa
     if (!group) continue
 
     for (const variant of parts.variantRanges) {
+      const variantName = candidate.slice(variant.start, variant.end - 1)
       const span: HighlightSpan = {
         start: sourceStart + variant.start,
         end: sourceStart + variant.end,
-        group: 'variant',
+        group: isResponsiveVariant(variantName) ? 'variantResponsive' : 'variant',
       }
       highlights.set(`${span.start}:${span.end}:${span.group}`, span)
     }

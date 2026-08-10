@@ -1,4 +1,5 @@
 export const highlightGroups = [
+  'variantResponsive',
   'variant',
   'layout',
   'flexGrid',
