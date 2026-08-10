@@ -12,6 +12,7 @@ export const highlightGroups = [
   'motion',
   'interactivity',
   'accessibility',
+  'custom',
 ] as const
 
 export type HighlightGroup = (typeof highlightGroups)[number]

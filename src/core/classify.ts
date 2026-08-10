@@ -24,6 +24,8 @@ const exact: Record<string, HighlightGroup> = {
 
   flex: 'flexGrid',
   grid: 'flexGrid',
+  group: 'interactivity',
+  peer: 'interactivity',
   'inline-flex': 'flexGrid',
   'inline-grid': 'flexGrid',
 
@@ -72,6 +74,7 @@ const exact: Record<string, HighlightGroup> = {
 }
 
 const families: Array<[RegExp, HighlightGroup]> = [
+  [/^(?:group|peer)\/.+$/, 'interactivity'],
   [/^inset-shadow(?:-|$)/, 'effects'],
   [/^inset-ring(?:-|$)/, 'border'],
   [

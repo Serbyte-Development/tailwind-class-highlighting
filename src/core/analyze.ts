@@ -1,7 +1,7 @@
 import { Scanner } from '@tailwindcss/oxide'
 import { splitCandidate } from './candidate'
 import { classifyUtility } from './classify'
-import { findSourceRegions, type RegionOptions } from './regions'
+import { findSourceRegions, findStringLiteralRegions, type RegionOptions } from './regions'
 import type { HighlightSpan, SourceRegion } from './types'
 
 const scanner = new Scanner({ sources: [] })
@@ -62,6 +62,22 @@ function buildScanBuffer(
   return { content: chunks.join(''), regions: bufferRegions }
 }
 
+function isRangeInside(regions: SourceRegion[], start: number, end: number): boolean {
+  let low = 0
+  let high = regions.length - 1
+
+  while (low <= high) {
+    const mid = (low + high) >> 1
+    const region = regions[mid]!
+
+    if (start < region.start) high = mid - 1
+    else if (start >= region.end) low = mid + 1
+    else return end <= region.end
+  }
+
+  return false
+}
+
 function mapToSource(regions: BufferRegion[], start: number, end: number): number | null {
   let low = 0
   let high = regions.length - 1
@@ -83,6 +99,7 @@ export function analyzeText(text: string, options: AnalyzeOptions): HighlightSpa
   const sourceRegions = mergeRegions(findSourceRegions(text, options))
   if (sourceRegions.length === 0) return []
 
+  const literalRegions = findStringLiteralRegions(text, sourceRegions)
   const scanBuffer = buildScanBuffer(text, sourceRegions)
   const candidates = scanner.getCandidatesWithPositions({
     content: scanBuffer.content,
@@ -98,7 +115,17 @@ export function analyzeText(text: string, options: AnalyzeOptions): HighlightSpa
     const parts = splitCandidate(candidate)
     const utility = candidate.slice(parts.utilityStart)
     const group = classifyUtility(utility)
-    if (!group) continue
+    if (!group) {
+      if (!isRangeInside(literalRegions, sourceStart, sourceStart + candidate.length)) continue
+
+      const span: HighlightSpan = {
+        start: sourceStart,
+        end: sourceStart + candidate.length,
+        group: 'custom',
+      }
+      highlights.set(`${span.start}:${span.end}:${span.group}`, span)
+      continue
+    }
 
     for (const variant of parts.variantRanges) {
       const variantName = candidate.slice(variant.start, variant.end - 1)

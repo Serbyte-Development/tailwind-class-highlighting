@@ -32,12 +32,24 @@ describe('analyzeText', () => {
   })
 
   it('does not highlight normal code identifiers inside class expressions', () => {
-    const text = `<div className={condition ? "flex" : variableName} />`
+    const text = `<div className={condition ? "flex custom-card" : variableName} />`
     const values = analyzeText(text, options).map((span) => text.slice(span.start, span.end))
 
     expect(values).toContain('flex')
+    expect(values).toContain('custom-card')
     expect(values).not.toContain('condition')
     expect(values).not.toContain('variableName')
+  })
+
+  it('marks plain custom class names separately', () => {
+    const text = `<div className="site-card flex md:hover:bg-red-500" />`
+    const highlighted = analyzeText(text, options).map((span) => ({
+      value: text.slice(span.start, span.end),
+      group: span.group,
+    }))
+
+    expect(highlighted).toContainEqual({ value: 'site-card', group: 'custom' })
+    expect(highlighted).toContainEqual({ value: 'flex', group: 'flexGrid' })
   })
 })
 

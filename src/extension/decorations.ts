@@ -1,14 +1,12 @@
 import * as vscode from 'vscode'
 import type { HighlightGroup, HighlightSpan } from '../core/types'
 
-type RenderGroup = 'variantResponsive' | 'variant' | 'utility'
+type RenderGroup = 'tailwind' | 'custom'
 
-const renderGroups: RenderGroup[] = ['variantResponsive', 'variant', 'utility']
+const renderGroups: RenderGroup[] = ['tailwind', 'custom']
 
 function renderGroupFor(group: HighlightGroup): RenderGroup {
-  if (group === 'variantResponsive') return 'variantResponsive'
-  if (group === 'variant') return 'variant'
-  return 'utility'
+  return group === 'custom' ? 'custom' : 'tailwind'
 }
 
 export class DecorationRenderer implements vscode.Disposable {
@@ -17,18 +15,17 @@ export class DecorationRenderer implements vscode.Disposable {
 
   constructor() {
     this.decorations.set(
-      'variantResponsive',
-      vscode.window.createTextEditorDecorationType({ color: '#51FFFF' }),
-    )
-    this.decorations.set(
-      'variant',
-      vscode.window.createTextEditorDecorationType({ color: '#2DF3AC' }),
-    )
-    this.decorations.set(
-      'utility',
+      'tailwind',
       vscode.window.createTextEditorDecorationType({
-        borderStyle: 'dashed',
+        borderColor: 'rgba(128, 128, 128, 0.18)',
+        borderStyle: 'solid',
         borderWidth: '0 0 1px 0',
+      }),
+    )
+    this.decorations.set(
+      'custom',
+      vscode.window.createTextEditorDecorationType({
+        opacity: '0.78',
       }),
     )
   }
