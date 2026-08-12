@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { splitCandidate } from '../src/core/candidate'
+import {
+  findArbitraryBracketRanges,
+  findImportantModifierRanges,
+  splitCandidate,
+} from '../src/core/candidate'
 
 describe('splitCandidate', () => {
   it('splits normal variants from the utility', () => {
@@ -18,5 +22,22 @@ describe('splitCandidate', () => {
       variantRanges: [{ start: 0, end: 26 }],
       utilityStart: 26,
     })
+  })
+})
+
+describe('candidate emphasis ranges', () => {
+  it('finds only square bracket characters across variants and utilities', () => {
+    const candidate = '[&>svg]:w-[calc(100%-2rem)]'
+    expect(findArbitraryBracketRanges(candidate)).toEqual([
+      { start: 0, end: 1 },
+      { start: 6, end: 7 },
+      { start: 10, end: 11 },
+      { start: candidate.length - 1, end: candidate.length },
+    ])
+  })
+
+  it('finds leading and trailing important modifiers', () => {
+    expect(findImportantModifierRanges('hover:!mt-4', 6)).toEqual([{ start: 6, end: 7 }])
+    expect(findImportantModifierRanges('bg-red-500!', 0)).toEqual([{ start: 10, end: 11 }])
   })
 })

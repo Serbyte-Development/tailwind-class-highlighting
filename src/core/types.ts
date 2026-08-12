@@ -1,18 +1,9 @@
 export const highlightGroups = [
-  'variantResponsive',
+  'utility',
+  'breakpoint',
   'variant',
-  'layout',
-  'flexGrid',
-  'spacing',
-  'sizing',
-  'typography',
-  'color',
-  'border',
-  'effects',
-  'motion',
-  'interactivity',
-  'accessibility',
-  'custom',
+  'arbitrary',
+  'important',
 ] as const
 
 export type HighlightGroup = (typeof highlightGroups)[number]

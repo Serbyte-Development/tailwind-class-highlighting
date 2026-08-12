@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+@utility two-only {
+  display: grid;
+}

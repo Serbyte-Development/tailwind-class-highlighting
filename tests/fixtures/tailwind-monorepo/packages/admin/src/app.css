@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+@utility admin-only {
+  display: grid;
+}

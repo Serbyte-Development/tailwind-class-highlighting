@@ -13,7 +13,7 @@ function unique(values: string[]): string[] {
 }
 
 export function getConfiguration(): HighlightConfiguration {
-  const config = vscode.workspace.getConfiguration('tailwindHighlight')
+  const config = vscode.workspace.getConfiguration('tailwindClassHighlighting')
   const tailwindConfig = vscode.workspace.getConfiguration('tailwindCSS')
 
   const classAttributes = config.get<string[]>('classAttributes', [

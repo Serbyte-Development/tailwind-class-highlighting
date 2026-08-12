@@ -1,37 +1,35 @@
-import * as path from 'node:path'
 import * as vscode from 'vscode'
 import { analyzeText } from '../core/analyze'
+import { getCandidateScanner } from '../core/scanner'
+import { TailwindProjectManager } from '../tailwind/project'
 import { getConfiguration, type HighlightConfiguration } from './config'
 import { DecorationRenderer } from './decorations'
-
-const languageExtensions: Record<string, string> = {
-  html: 'html',
-  javascript: 'js',
-  javascriptreact: 'jsx',
-  typescript: 'ts',
-  typescriptreact: 'tsx',
-  vue: 'vue',
-  svelte: 'svelte',
-  astro: 'astro',
-  php: 'php',
-  blade: 'blade.php',
-}
-
-function documentExtension(document: vscode.TextDocument): string {
-  const mapped = languageExtensions[document.languageId]
-  if (mapped) return mapped
-  const extension = path.extname(document.fileName).slice(1)
-  return extension || 'html'
-}
 
 export class HighlightController implements vscode.Disposable {
   private config: HighlightConfiguration = getConfiguration()
   private renderer = new DecorationRenderer()
-  private timers = new Map<string, NodeJS.Timeout>()
+  private tailwindProjects = new TailwindProjectManager()
+  private timers = new Map<vscode.TextEditor, NodeJS.Timeout>()
   private subscriptions: vscode.Disposable[] = []
 
   constructor() {
+    const tailwindStyles = vscode.workspace.createFileSystemWatcher('**/*.{css,pcss,postcss}')
+    const tailwindPackages = vscode.workspace.createFileSystemWatcher('**/package.json')
+
+    const invalidateTailwindProjects = (): void => {
+      this.tailwindProjects.invalidateAll()
+      for (const editor of vscode.window.visibleTextEditors) this.schedule(editor, 0)
+    }
+
     this.subscriptions.push(
+      tailwindStyles,
+      tailwindPackages,
+      tailwindStyles.onDidCreate(invalidateTailwindProjects),
+      tailwindStyles.onDidChange(invalidateTailwindProjects),
+      tailwindStyles.onDidDelete(invalidateTailwindProjects),
+      tailwindPackages.onDidCreate(invalidateTailwindProjects),
+      tailwindPackages.onDidChange(invalidateTailwindProjects),
+      tailwindPackages.onDidDelete(invalidateTailwindProjects),
       vscode.window.onDidChangeVisibleTextEditors((editors) => {
         for (const editor of editors) this.schedule(editor, 0)
       }),
@@ -44,16 +42,24 @@ export class HighlightController implements vscode.Disposable {
         }
       }),
       vscode.workspace.onDidChangeConfiguration((event) => {
-        if (!event.affectsConfiguration('tailwindHighlight')) return
+        if (
+          !event.affectsConfiguration('tailwindClassHighlighting') &&
+          !event.affectsConfiguration('tailwindCSS.classAttributes') &&
+          !event.affectsConfiguration('tailwindCSS.classFunctions')
+        ) {
+          return
+        }
         this.config = getConfiguration()
         this.renderer.dispose()
         this.renderer = new DecorationRenderer()
         for (const editor of vscode.window.visibleTextEditors) this.schedule(editor, 0)
       }),
       vscode.workspace.onDidCloseTextDocument((document) => {
-        const timer = this.timers.get(document.uri.toString())
-        if (timer) clearTimeout(timer)
-        this.timers.delete(document.uri.toString())
+        for (const [editor, timer] of this.timers) {
+          if (editor.document !== document) continue
+          clearTimeout(timer)
+          this.timers.delete(editor)
+        }
       }),
     )
 
@@ -61,30 +67,62 @@ export class HighlightController implements vscode.Disposable {
   }
 
   private schedule(editor: vscode.TextEditor, delay = this.config.debounceMs): void {
-    const key = editor.document.uri.toString()
-    const previous = this.timers.get(key)
+    const previous = this.timers.get(editor)
     if (previous) clearTimeout(previous)
 
     const timer = setTimeout(() => {
-      this.timers.delete(key)
-      this.update(editor)
+      this.timers.delete(editor)
+      void this.update(editor)
     }, delay)
-    this.timers.set(key, timer)
+    this.timers.set(editor, timer)
   }
 
-  private update(editor: vscode.TextEditor): void {
+  private async update(editor: vscode.TextEditor): Promise<void> {
     const document = editor.document
-    if (!this.config.enabled || !this.config.languages.has(document.languageId)) {
+    if (
+      document.uri.scheme !== 'file' ||
+      !this.config.enabled ||
+      !this.config.languages.has(document.languageId)
+    ) {
       this.renderer.clear(editor)
       return
     }
 
-    const spans = analyzeText(document.getText(), {
-      extension: documentExtension(document),
-      classAttributes: this.config.classAttributes,
-      classFunctions: this.config.classFunctions,
-    })
-    this.renderer.apply(editor, spans)
+    const version = document.version
+    const text = document.getText()
+    const config = this.config
+
+    try {
+      const workspaceRoot = vscode.workspace.getWorkspaceFolder(document.uri)?.uri.fsPath
+      const tailwindProject = await this.tailwindProjects.getProject(
+        document.fileName,
+        workspaceRoot,
+      )
+      if (document.version !== version) return
+      if (!tailwindProject) {
+        this.renderer.clear(editor)
+        return
+      }
+
+      const scanner = await getCandidateScanner()
+      if (document.version !== version) return
+
+      const spans = analyzeText(
+        text,
+        {
+          classAttributes: config.classAttributes,
+          classFunctions: config.classFunctions,
+        },
+        scanner,
+        tailwindProject.validator,
+      )
+      if (document.version !== version) return
+
+      this.renderer.apply(editor, spans)
+    } catch (error) {
+      console.error('[Tailwind Class Highlighting] Failed to analyze document', error)
+      this.renderer.clear(editor)
+    }
   }
 
   dispose(): void {

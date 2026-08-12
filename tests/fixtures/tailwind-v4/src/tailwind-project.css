@@ -1,0 +1,11 @@
+@theme {
+  --color-brand: #123456;
+  --breakpoint-tablet: 48rem;
+  --container-card: 32rem;
+}
+
+@utility project-card {
+  border-radius: 1rem;
+}
+
+@custom-variant hocus (&:hover, &:focus);

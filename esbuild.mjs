@@ -1,5 +1,7 @@
 import * as esbuild from 'esbuild'
 
+const production = process.argv.includes('--production')
+
 await esbuild.build({
   entryPoints: ['src/extension.ts'],
   outfile: 'dist/extension.js',
@@ -8,6 +10,6 @@ await esbuild.build({
   format: 'cjs',
   target: 'node20',
   external: ['vscode', '@tailwindcss/oxide'],
-  sourcemap: true,
-  minify: false,
+  sourcemap: !production,
+  minify: production,
 })

@@ -1,18 +1,14 @@
-import { Scanner } from '@tailwindcss/oxide'
-import { splitCandidate } from './candidate'
-import { classifyUtility } from './classify'
-import { findSourceRegions, findStringLiteralRegions, type RegionOptions } from './regions'
+import {
+  findArbitraryBracketRanges,
+  findImportantModifierRanges,
+  splitCandidate,
+} from './candidate'
+import { findSourceRegions, type RegionOptions } from './regions'
+import type { CandidateScanner } from './scanner'
 import type { HighlightSpan, SourceRegion } from './types'
+import type { CandidateValidator } from './validator'
 
-const scanner = new Scanner({ sources: [] })
-
-export interface AnalyzeOptions extends RegionOptions {
-  extension: string
-}
-
-function isResponsiveVariant(variant: string): boolean {
-  return /^(?:sm|md|lg|xl|2xl|(?:min|max)-|@)/.test(variant)
-}
+export type AnalyzeOptions = RegionOptions
 
 interface BufferRegion {
   bufferStart: number
@@ -41,10 +37,7 @@ function mergeRegions(regions: SourceRegion[]): SourceRegion[] {
 function buildScanBuffer(
   text: string,
   regions: SourceRegion[],
-): {
-  content: string
-  regions: BufferRegion[]
-} {
+): { content: string; regions: BufferRegion[] } {
   const chunks: string[] = []
   const bufferRegions: BufferRegion[] = []
   let offset = 0
@@ -60,22 +53,6 @@ function buildScanBuffer(
   }
 
   return { content: chunks.join(''), regions: bufferRegions }
-}
-
-function isRangeInside(regions: SourceRegion[], start: number, end: number): boolean {
-  let low = 0
-  let high = regions.length - 1
-
-  while (low <= high) {
-    const mid = (low + high) >> 1
-    const region = regions[mid]!
-
-    if (start < region.start) high = mid - 1
-    else if (start >= region.end) low = mid + 1
-    else return end <= region.end
-  }
-
-  return false
 }
 
 function mapToSource(regions: BufferRegion[], start: number, end: number): number | null {
@@ -95,16 +72,38 @@ function mapToSource(regions: BufferRegion[], start: number, end: number): numbe
   return null
 }
 
-export function analyzeText(text: string, options: AnalyzeOptions): HighlightSpan[] {
+function addSpan(
+  highlights: Map<string, HighlightSpan>,
+  sourceStart: number,
+  start: number,
+  end: number,
+  group: HighlightSpan['group'],
+): void {
+  const span: HighlightSpan = {
+    start: sourceStart + start,
+    end: sourceStart + end,
+    group,
+  }
+  highlights.set(`${span.start}:${span.end}:${span.group}`, span)
+}
+
+export function analyzeText(
+  text: string,
+  options: AnalyzeOptions,
+  scanner: CandidateScanner,
+  validator: CandidateValidator,
+): HighlightSpan[] {
   const sourceRegions = mergeRegions(findSourceRegions(text, options))
   if (sourceRegions.length === 0) return []
 
-  const literalRegions = findStringLiteralRegions(text, sourceRegions)
   const scanBuffer = buildScanBuffer(text, sourceRegions)
   const candidates = scanner.getCandidatesWithPositions({
     content: scanBuffer.content,
     extension: 'html',
   })
+  const validCandidates = validator.getValidCandidates([
+    ...new Set(candidates.map(({ candidate }) => candidate)),
+  ])
   const highlights = new Map<string, HighlightSpan>()
 
   for (const { candidate, position } of candidates) {
@@ -113,36 +112,32 @@ export function analyzeText(text: string, options: AnalyzeOptions): HighlightSpa
     if (sourceStart == null) continue
 
     const parts = splitCandidate(candidate)
-    const utility = candidate.slice(parts.utilityStart)
-    const group = classifyUtility(utility)
-    if (!group) {
-      if (!isRangeInside(literalRegions, sourceStart, sourceStart + candidate.length)) continue
+    if (!validCandidates.has(candidate)) continue
 
-      const span: HighlightSpan = {
-        start: sourceStart,
-        end: sourceStart + candidate.length,
-        group: 'custom',
+    const important = findImportantModifierRanges(candidate, parts.utilityStart).length > 0
+
+    if (!important) {
+      for (const variant of parts.variantRanges) {
+        const variantName = candidate.slice(variant.start, variant.end - 1)
+        addSpan(
+          highlights,
+          sourceStart,
+          variant.start,
+          variant.end,
+          validator.isBreakpointVariant(variantName) ? 'breakpoint' : 'variant',
+        )
       }
-      highlights.set(`${span.start}:${span.end}:${span.group}`, span)
-      continue
-    }
 
-    for (const variant of parts.variantRanges) {
-      const variantName = candidate.slice(variant.start, variant.end - 1)
-      const span: HighlightSpan = {
-        start: sourceStart + variant.start,
-        end: sourceStart + variant.end,
-        group: isResponsiveVariant(variantName) ? 'variantResponsive' : 'variant',
+      for (const range of findArbitraryBracketRanges(candidate)) {
+        addSpan(highlights, sourceStart, range.start, range.end, 'arbitrary')
       }
-      highlights.set(`${span.start}:${span.end}:${span.group}`, span)
     }
 
-    const utilitySpan: HighlightSpan = {
-      start: sourceStart + parts.utilityStart,
-      end: sourceStart + candidate.length,
-      group,
+    addSpan(highlights, sourceStart, parts.utilityStart, candidate.length, 'utility')
+
+    if (important) {
+      addSpan(highlights, sourceStart, 0, candidate.length, 'important')
     }
-    highlights.set(`${utilitySpan.start}:${utilitySpan.end}:${utilitySpan.group}`, utilitySpan)
   }
 
   return [...highlights.values()].sort((a, b) => a.start - b.start || a.end - b.end)

@@ -1,7 +1,7 @@
 {
-  "name": "tailwind-highlight",
-  "displayName": "Tailwind Highlight",
-  "description": "Fast semantic highlighting for Tailwind CSS utility classes.",
+  "name": "tailwind-class-highlighting",
+  "displayName": "Tailwind Class Highlighting",
+  "description": "Fast, subtle Tailwind CSS class highlighting for VS Code and Cursor.",
   "version": "0.1.0",
   "publisher": "serbyte",
   "license": "MIT",
@@ -15,6 +15,8 @@
   "keywords": [
     "tailwind",
     "tailwindcss",
+    "tailwind classes",
+    "tailwind class highlighting",
     "highlight",
     "syntax",
     "utilities"
@@ -28,23 +30,77 @@
   ],
   "scripts": {
     "build": "node esbuild.mjs",
+    "build:production": "node esbuild.mjs --production",
     "check": "tsc --noEmit",
     "test": "vitest run",
     "bench": "vitest bench --run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "package": "npm run build && vsce package --target darwin-arm64 --allow-missing-repository --out dist/tailwind-highlight-darwin-arm64.vsix"
+    "vscode:prepublish": "npm run build:production",
+    "package": "node scripts/package.mjs"
   },
   "contributes": {
+    "colors": [
+      {
+        "id": "tailwindClassHighlighting.utilityUnderline",
+        "description": "Dotted underline color for recognized Tailwind utility classes.",
+        "defaults": {
+          "dark": "#8080805C",
+          "light": "#8080805C",
+          "highContrast": "#FFFFFF99",
+          "highContrastLight": "#00000099"
+        }
+      },
+      {
+        "id": "tailwindClassHighlighting.breakpoint",
+        "description": "Foreground color for Tailwind breakpoint and container-query variants.",
+        "defaults": {
+          "dark": "#51FFFF",
+          "light": "#007C91",
+          "highContrast": "#66FFFF",
+          "highContrastLight": "#005F73"
+        }
+      },
+      {
+        "id": "tailwindClassHighlighting.variant",
+        "description": "Foreground color for Tailwind state and behavior variants.",
+        "defaults": {
+          "dark": "#2DF3AC",
+          "light": "#087F5B",
+          "highContrast": "#66FFC2",
+          "highContrastLight": "#006644"
+        }
+      },
+      {
+        "id": "tailwindClassHighlighting.arbitrary",
+        "description": "Foreground color for square brackets in Tailwind arbitrary variants and values.",
+        "defaults": {
+          "dark": "#C4A7E7",
+          "light": "#6F42A1",
+          "highContrast": "#D8C2FF",
+          "highContrastLight": "#5B2C83"
+        }
+      },
+      {
+        "id": "tailwindClassHighlighting.important",
+        "description": "Foreground color for Tailwind classes using the important modifier.",
+        "defaults": {
+          "dark": "#FF7AC6",
+          "light": "#A6005A",
+          "highContrast": "#FF9ED6",
+          "highContrastLight": "#8A004A"
+        }
+      }
+    ],
     "configuration": {
-      "title": "Tailwind Highlight",
+      "title": "Tailwind Class Highlighting",
       "properties": {
-        "tailwindHighlight.enabled": {
+        "tailwindClassHighlighting.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Enable Tailwind utility highlighting."
         },
-        "tailwindHighlight.languages": {
+        "tailwindClassHighlighting.languages": {
           "type": "array",
           "items": {
             "type": "string"
@@ -63,7 +119,7 @@
           ],
           "description": "VS Code language IDs where highlighting is enabled."
         },
-        "tailwindHighlight.classAttributes": {
+        "tailwindClassHighlighting.classAttributes": {
           "type": "array",
           "items": {
             "type": "string"
@@ -78,7 +134,7 @@
           ],
           "description": "Attribute names whose values may contain Tailwind classes."
         },
-        "tailwindHighlight.classFunctions": {
+        "tailwindClassHighlighting.classFunctions": {
           "type": "array",
           "items": {
             "type": "string"
@@ -93,7 +149,7 @@
           ],
           "description": "Regular-expression patterns for functions or tagged templates that contain Tailwind classes."
         },
-        "tailwindHighlight.debounceMs": {
+        "tailwindClassHighlighting.debounceMs": {
           "type": "number",
           "default": 25,
           "minimum": 0,
@@ -107,11 +163,12 @@
     "@tailwindcss/oxide": "4.3.3"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^20.19.43",
     "@types/vscode": "1.95.0",
     "@vscode/vsce": "^3.9.2",
     "esbuild": "^0.28.2",
     "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "vitest": "4.1.10"
   }

@@ -1,12 +1,16 @@
 import * as vscode from 'vscode'
-import type { HighlightGroup, HighlightSpan } from '../core/types'
+import type { HighlightSpan } from '../core/types'
 
-type RenderGroup = 'tailwind' | 'custom'
+type RenderGroup = HighlightSpan['group']
 
-const renderGroups: RenderGroup[] = ['tailwind', 'custom']
+const renderGroups: RenderGroup[] = ['utility', 'breakpoint', 'variant', 'arbitrary', 'important']
 
-function renderGroupFor(group: HighlightGroup): RenderGroup {
-  return group === 'custom' ? 'custom' : 'tailwind'
+function dottedUnderline(): vscode.DecorationRenderOptions {
+  return {
+    borderColor: new vscode.ThemeColor('tailwindClassHighlighting.utilityUnderline'),
+    borderStyle: 'dotted',
+    borderWidth: '0 0 1px 0',
+  }
 }
 
 export class DecorationRenderer implements vscode.Disposable {
@@ -14,18 +18,29 @@ export class DecorationRenderer implements vscode.Disposable {
   private signatures = new WeakMap<vscode.TextEditor, Map<RenderGroup, string>>()
 
   constructor() {
+    this.decorations.set('utility', vscode.window.createTextEditorDecorationType(dottedUnderline()))
     this.decorations.set(
-      'tailwind',
+      'breakpoint',
       vscode.window.createTextEditorDecorationType({
-        borderColor: 'rgba(128, 128, 128, 0.18)',
-        borderStyle: 'solid',
-        borderWidth: '0 0 1px 0',
+        color: new vscode.ThemeColor('tailwindClassHighlighting.breakpoint'),
       }),
     )
     this.decorations.set(
-      'custom',
+      'variant',
       vscode.window.createTextEditorDecorationType({
-        opacity: '0.78',
+        color: new vscode.ThemeColor('tailwindClassHighlighting.variant'),
+      }),
+    )
+    this.decorations.set(
+      'arbitrary',
+      vscode.window.createTextEditorDecorationType({
+        color: new vscode.ThemeColor('tailwindClassHighlighting.arbitrary'),
+      }),
+    )
+    this.decorations.set(
+      'important',
+      vscode.window.createTextEditorDecorationType({
+        color: new vscode.ThemeColor('tailwindClassHighlighting.important'),
       }),
     )
   }
@@ -33,7 +48,7 @@ export class DecorationRenderer implements vscode.Disposable {
   apply(editor: vscode.TextEditor, spans: HighlightSpan[]): void {
     const grouped = new Map<RenderGroup, HighlightSpan[]>(renderGroups.map((group) => [group, []]))
 
-    for (const span of spans) grouped.get(renderGroupFor(span.group))!.push(span)
+    for (const span of spans) grouped.get(span.group)!.push(span)
 
     let editorSignatures = this.signatures.get(editor)
     if (!editorSignatures) {

@@ -1,10 +1,15 @@
+export interface CandidateRange {
+  start: number
+  end: number
+}
+
 export interface CandidateParts {
-  variantRanges: Array<{ start: number; end: number }>
+  variantRanges: CandidateRange[]
   utilityStart: number
 }
 
 export function splitCandidate(candidate: string): CandidateParts {
-  const variantRanges: Array<{ start: number; end: number }> = []
+  const variantRanges: CandidateRange[] = []
   let squareDepth = 0
   let parenDepth = 0
   let quote: string | null = null
@@ -35,4 +40,46 @@ export function splitCandidate(candidate: string): CandidateParts {
   }
 
   return { variantRanges, utilityStart: segmentStart }
+}
+
+export function findArbitraryBracketRanges(candidate: string): CandidateRange[] {
+  const ranges: CandidateRange[] = []
+  let quote: string | null = null
+
+  for (let i = 0; i < candidate.length; i++) {
+    const char = candidate[i]
+
+    if (quote) {
+      if (char === '\\') i++
+      else if (char === quote) quote = null
+      continue
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char
+      continue
+    }
+
+    if (char === '[' || char === ']') ranges.push({ start: i, end: i + 1 })
+  }
+
+  return ranges
+}
+
+export function findImportantModifierRanges(
+  candidate: string,
+  utilityStart: number,
+): CandidateRange[] {
+  const ranges: CandidateRange[] = []
+
+  if (candidate[utilityStart] === '!') {
+    ranges.push({ start: utilityStart, end: utilityStart + 1 })
+  }
+
+  const last = candidate.length - 1
+  if (last >= utilityStart && candidate[last] === '!' && last !== utilityStart) {
+    ranges.push({ start: last, end: last + 1 })
+  }
+
+  return ranges
 }

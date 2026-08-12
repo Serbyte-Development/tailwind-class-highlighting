@@ -1,6 +1,8 @@
 .github/**
 benchmarks/**
+wiki/**
 src/**
+scripts/**
 tests/**
 **/*.map
 .gitignore

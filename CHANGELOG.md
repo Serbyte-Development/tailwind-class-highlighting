@@ -2,9 +2,21 @@
 
 ## 0.1.0
 
-- Initial local release.
-- Tailwind Oxide candidate extraction with UTF-16 positions.
-- Semantic utility groups and separately highlighted variants.
+- Initial release as Tailwind Class Highlighting.
+- Tailwind Oxide candidate extraction with UTF-16 editor positions.
+- Lazy Oxide loading so unsupported editor sessions do not load the native scanner.
+- Tailwind v4 project discovery and validation through the workspace project's own installed `tailwindcss` design system.
+- Tailwind v4 discovery anchors on `@import "tailwindcss"` and follows relative CSS importers upward instead of guessing from filenames or Tailwind-looking directives.
+- Project-defined `@utility`, `@custom-variant`, theme values, breakpoints, and container-query names are understood from the project configuration.
+- Multiple Tailwind CSS entrypoints and monorepo package boundaries are isolated during project resolution.
+- Project resolution stays inside the document's VS Code workspace folder and refuses ambiguous equal-distance Tailwind roots rather than guessing.
+- Faint dotted underlines for recognized Tailwind utilities.
+- Separate breakpoint and state/behavior variant colors.
+- Colored square brackets for arbitrary values and variants.
+- Whole-class foreground coloring for important (`!`) utilities.
+- Native VS Code theme colors for every visual treatment.
+- Custom classes remain visually unchanged.
 - Support for class attributes, `clsx`, `classnames`, `cn`, `cva`, `twMerge`, and tagged templates.
-- Tailwind v4 utility families, arbitrary values, arbitrary properties, and arbitrary variants.
-- Batched decoration updates with unchanged-group suppression.
+- Tailwind CSS v4 only; unsupported, missing, or broken Tailwind projects are left unchanged rather than using heuristic utility recognition.
+- Batched decoration updates with unchanged-range suppression.
+- Native release packaging for macOS, Windows, and Linux on x64 and arm64.

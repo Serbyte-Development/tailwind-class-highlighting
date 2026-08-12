@@ -1,0 +1,5 @@
+@tailwind utilities;
+
+@utility ignored-legacy-anchor {
+  display: none;
+}
