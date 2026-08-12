@@ -1,12 +1,15 @@
 # Tailwind Class Highlighting
 
+[![CI](https://github.com/Serbyte-Development/tailwind-class-highlighting/actions/workflows/ci.yml/badge.svg)](https://github.com/Serbyte-Development/tailwind-class-highlighting/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+<!--
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/serbytedevelopment.tailwind-class-highlighting)](https://marketplace.visualstudio.com/items?itemName=serbytedevelopment.tailwind-class-highlighting)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/serbytedevelopment.tailwind-class-highlighting)](https://marketplace.visualstudio.com/items?itemName=serbytedevelopment.tailwind-class-highlighting)
+[![Open VSX Version](https://img.shields.io/open-vsx/v/serbytedevelopment/tailwind-class-highlighting)](https://open-vsx.org/extension/serbytedevelopment/tailwind-class-highlighting)
+-->
+
 Make dense Tailwind CSS v4 class lists easier to read in VS Code, Cursor, and compatible editors.
-
-## Why use it?
-
-Tailwind puts a lot of information inside one string. Once a component has responsive styles, state variants, arbitrary values, container queries, and important modifiers, that string becomes much harder to scan than the JSX around it.
-
-Tailwind Class Highlighting adds just enough visual structure to make those class lists readable without turning every utility into a rainbow.
 
 ### Before
 
@@ -27,6 +30,12 @@ Tailwind Class Highlighting adds just enough visual structure to make those clas
 **Requires Tailwind CSS v4.** Tailwind CSS v3 and earlier are intentionally unsupported.
 
 **Developed & maintained by [Serbyte Development](https://www.serbyte.net/)** · [GitHub](https://github.com/Serbyte-Development)
+
+## Why use it?
+
+Tailwind puts a lot of information inside one string. Once a component has responsive styles, state variants, arbitrary values, container queries, and important modifiers, that string becomes much harder to scan than the JSX around it.
+
+Tailwind Class Highlighting adds just enough visual structure to make those class lists readable without turning every utility into a rainbow.
 
 ## Highlighting
 
