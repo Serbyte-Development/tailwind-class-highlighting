@@ -8,6 +8,14 @@ Tailwind puts a lot of information inside one string. Once a component has respo
 
 Tailwind Class Highlighting adds just enough visual structure to make those class lists readable without turning every utility into a rainbow.
 
+### Before
+
+![Tailwind classes without Tailwind Class Highlighting](images/before.png)
+
+### With Tailwind Class Highlighting
+
+![Tailwind classes with responsive, state, arbitrary, and important highlighting](images/after.png)
+
 - **See responsive changes immediately.** Breakpoints and container-query variants stand out from normal utilities.
 - **Separate behavior from layout.** `hover:`, `focus:`, `dark:`, `data-*`, `aria-*`, and other variants use their own color.
 - **Spot arbitrary values quickly.** Only the square brackets in values such as `w-[317px]` are colored.
@@ -17,8 +25,6 @@ Tailwind Class Highlighting adds just enough visual structure to make those clas
 - **Follow your actual Tailwind project.** Tailwind v4 utilities, theme values, custom variants, custom breakpoints, and `@utility` definitions are validated by the project's own Tailwind installation.
 
 **Requires Tailwind CSS v4.** Tailwind CSS v3 and earlier are intentionally unsupported.
-
-<!-- Add the final screenshot here after capturing examples/highlighting-preview.tsx. -->
 
 **Developed & maintained by [Serbyte Development](https://www.serbyte.net/)** · [GitHub](https://github.com/Serbyte-Development)
 
