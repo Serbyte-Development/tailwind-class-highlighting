@@ -1,4 +1,6 @@
 import { spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
+import path from 'node:path'
 
 const targets = {
   'darwin:arm64': 'darwin-arm64',
@@ -14,11 +16,13 @@ if (!target) {
   throw new Error(`Unsupported packaging platform: ${process.platform}-${process.arch}`)
 }
 
-const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+const require = createRequire(import.meta.url)
+const vscePackagePath = require.resolve('@vscode/vsce/package.json')
+const vscePath = path.join(path.dirname(vscePackagePath), 'vsce')
 const result = spawnSync(
-  npx,
+  process.execPath,
   [
-    'vsce',
+    vscePath,
     'package',
     '--target',
     target,
@@ -28,4 +32,5 @@ const result = spawnSync(
   { stdio: 'inherit' },
 )
 
+if (result.error) throw result.error
 process.exit(result.status ?? 1)
