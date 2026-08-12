@@ -11,13 +11,13 @@
 
 Make dense Tailwind CSS v4 class lists easier to read in VS Code, Cursor, and compatible editors.
 
-### Before
-
-![Tailwind classes without Tailwind Class Highlighting](images/before.png)
-
 ### With Tailwind Class Highlighting
 
 ![Tailwind classes with responsive, state, arbitrary, and important highlighting](images/after.png)
+
+### Before
+
+![Tailwind classes without Tailwind Class Highlighting](images/before.png)
 
 - **See responsive changes immediately.** Breakpoints and container-query variants stand out from normal utilities.
 - **Separate behavior from layout.** `hover:`, `focus:`, `dark:`, `data-*`, `aria-*`, and other variants use their own color.
