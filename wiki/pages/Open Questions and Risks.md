@@ -22,7 +22,7 @@ Verified 2026-08-11.
 
 ## Release
 
-- Public repository metadata, Marketplace/Open VSX publisher choice, icon, and publish automation are still unresolved. (`package.json`, `.github/workflows/package.yml`)
+- Release identity and Marketplace metadata are configured. The repository is still private and actual VS Code Marketplace/Open VSX publication remains a deliberate launch action. (`package.json`, `.github/workflows/package.yml`)
 - Only six native desktop targets are packaged. Alpine/musl-specific distribution, Linux armhf, and web extensions are not current targets. (`scripts/package.mjs`, `.github/workflows/package.yml`)
 - Theme colors have light/dark/high-contrast defaults, but final public visual QA across representative themes remains a release check rather than automated coverage. (`package.json`)
 

@@ -1,5 +1,10 @@
 .github/**
+.vscode/**
+.secrets/**
+.env*
 benchmarks/**
+examples/**
+images/icon-source.jpg
 wiki/**
 src/**
 scripts/**

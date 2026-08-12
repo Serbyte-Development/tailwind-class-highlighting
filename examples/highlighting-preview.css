@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand: oklch(0.75 0.16 215);
+  --breakpoint-tablet: 56rem;
+  --container-card: 36rem;
+}
+
+@utility card-glow {
+  box-shadow: 0 24px 80px rgb(14 165 233 / 0.2);
+}
+
+@custom-variant hocus (&:hover, &:focus-visible);

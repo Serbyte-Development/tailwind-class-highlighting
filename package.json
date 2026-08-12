@@ -1,10 +1,19 @@
 {
   "name": "tailwind-class-highlighting",
   "displayName": "Tailwind Class Highlighting",
-  "description": "Fast, subtle Tailwind CSS class highlighting for VS Code and Cursor.",
+  "description": "Fast, subtle Tailwind CSS v4 class highlighting for VS Code and Cursor.",
   "version": "0.1.0",
-  "publisher": "serbyte",
+  "publisher": "serbytedevelopment",
   "license": "MIT",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Serbyte-Development/tailwind-class-highlighting.git"
+  },
+  "homepage": "https://github.com/Serbyte-Development/tailwind-class-highlighting#readme",
+  "bugs": {
+    "url": "https://github.com/Serbyte-Development/tailwind-class-highlighting/issues"
+  },
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -15,8 +24,10 @@
   "keywords": [
     "tailwind",
     "tailwindcss",
+    "tailwind v4",
     "tailwind classes",
     "tailwind class highlighting",
+    "cursor",
     "highlight",
     "syntax",
     "utilities"

@@ -189,6 +189,40 @@ describe('TailwindProjectManager', () => {
     await expect(manager.getProject(documentPath)).resolves.not.toBeNull()
   })
 
+  it('loads the README screenshot example through the real Tailwind v4 project', async () => {
+    const manager = new TailwindProjectManager()
+    const workspaceRoot = path.resolve('.')
+    const documentPath = path.resolve('examples/highlighting-preview.tsx')
+    const project = await manager.getProject(documentPath, workspaceRoot)
+
+    expect(project?.entrypoint).toBe(path.resolve('examples/highlighting-preview.css'))
+    expect(
+      project?.validator.getValidCandidates([
+        'card-glow',
+        'w-[720px]',
+        'md:flex-row',
+        'tablet:gap-8',
+        '@card:flex-row',
+        'hover:border-sky-400/70',
+        'hocus:bg-brand/10',
+        '[&_svg]:size-5',
+        '!ring-1',
+      ]),
+    ).toEqual(
+      new Set([
+        'card-glow',
+        'w-[720px]',
+        'md:flex-row',
+        'tablet:gap-8',
+        '@card:flex-row',
+        'hover:border-sky-400/70',
+        'hocus:bg-brand/10',
+        '[&_svg]:size-5',
+        '!ring-1',
+      ]),
+    )
+  })
+
   it('returns null when no Tailwind installation can be resolved', async () => {
     const directory = await mkdtemp(path.join(tmpdir(), 'tailwind-class-highlighting-'))
     temporaryDirectories.push(directory)

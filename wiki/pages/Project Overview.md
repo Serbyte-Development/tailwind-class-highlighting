@@ -39,7 +39,8 @@ Verified 2026-08-11.
 ## Current Status
 
 - The production candidate has unit tests, type checking, formatting checks, benchmarks, production bundling, native packaging, and CI workflows. (`package.json`, `tests/`, `benchmarks/analyze.bench.ts`, `.github/workflows/`)
-- Public release identity is not complete: `package.json` currently has publisher `serbyte` but no repository/homepage/bugs metadata or Marketplace icon. (`package.json`)
+- Public release identity is configured as `serbytedevelopment.tailwind-class-highlighting`, with GitHub repository/homepage/issues metadata and a 512x512 PNG Marketplace icon. (`package.json`, `images/icon.png`)
+- The repository can remain private while release preparation finishes; changing visibility and publishing to registries are deliberate launch actions rather than code changes.
 
 ## Related
 

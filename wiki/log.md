@@ -40,3 +40,10 @@
 - Completed the project-local Tailwind v4 migration and removed the temporary root `build-plan.md` checklist.
 - Final architecture is v4-only, uses `@import "tailwindcss"` discovery, validates candidates through the project's own design system, and has no hand-maintained utility classifier.
 - Rechecked workspace-host behavior, six-target native packaging, tests, type checking, formatting, production build, benchmark performance, dependency audit, and VSIX contents.
+
+## [2026-08-11] update | Prepare public release identity
+
+- Finalized extension publisher identity as `serbytedevelopment.tailwind-class-highlighting` and added GitHub repository/homepage/issues metadata.
+- Added a 512x512 PNG Marketplace icon and explicit VSIX exclusions for local secrets, environment files, editor settings, and the source JPG.
+- Added a compact support document and made Tailwind CSS v4 support explicit in Marketplace-facing copy.
+- Kept registry publication manual for the first release; packaging remains independently validated across six native targets.

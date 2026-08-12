@@ -24,9 +24,9 @@ Verified 2026-08-11.
 
 - Add additional native/WASM targets only if demand justifies them. Current packaging intentionally covers desktop macOS, Windows, and Linux x64/arm64. (`scripts/package.mjs`, `.github/workflows/package.yml`)
 
-### Public release polish
+### Automated publishing
 
-- Add repository/homepage/bugs metadata, a Marketplace icon, final publisher identity, and publish automation after the public repository is created. (`package.json`, `.github/workflows/package.yml`)
+- Consider registry publish automation after the first release. Current workflows deliberately stop at validated platform-specific VSIX artifacts so VS Code Marketplace and Open VSX publication can be controlled independently. (`.github/workflows/package.yml`)
 
 ## Related
 

@@ -1,8 +1,26 @@
 # Tailwind Class Highlighting
 
-Fast, restrained Tailwind CSS class highlighting for VS Code, Cursor, and compatible editors.
+Make dense Tailwind CSS v4 class lists easier to read in VS Code, Cursor, and compatible editors.
 
-Tailwind Class Highlighting makes dense class lists easier to scan without recoloring every utility. It uses Tailwind CSS's Oxide scanner for candidate extraction, then asks the project's own Tailwind installation which candidates are actually valid when Tailwind v4 is available.
+## Why use it?
+
+Tailwind puts a lot of information inside one string. Once a component has responsive styles, state variants, arbitrary values, container queries, and important modifiers, that string becomes much harder to scan than the JSX around it.
+
+Tailwind Class Highlighting adds just enough visual structure to make those class lists readable without turning every utility into a rainbow.
+
+- **See responsive changes immediately.** Breakpoints and container-query variants stand out from normal utilities.
+- **Separate behavior from layout.** `hover:`, `focus:`, `dark:`, `data-*`, `aria-*`, and other variants use their own color.
+- **Spot arbitrary values quickly.** Only the square brackets in values such as `w-[317px]` are colored.
+- **Make important classes obvious.** Classes using `!` get one foreground treatment across the whole candidate.
+- **Keep normal utilities calm.** Recognized utilities keep the editor's normal text color and receive only a faint dotted underline.
+- **Leave your own classes alone.** Custom non-Tailwind classes are not styled.
+- **Follow your actual Tailwind project.** Tailwind v4 utilities, theme values, custom variants, custom breakpoints, and `@utility` definitions are validated by the project's own Tailwind installation.
+
+**Requires Tailwind CSS v4.** Tailwind CSS v3 and earlier are intentionally unsupported.
+
+<!-- Add the final screenshot here after capturing examples/highlighting-preview.tsx. -->
+
+**Developed & maintained by [Serbyte Development](https://www.serbyte.net/)** · [GitHub](https://github.com/Serbyte-Development)
 
 ## Highlighting
 
@@ -31,7 +49,7 @@ All visual colors are native VS Code theme colors and can be overridden with `wo
 }
 ```
 
-The extension is intentionally focused on readability. It does not provide completion, validation, linting, formatting, or class sorting, and is designed to work alongside the official Tailwind CSS IntelliSense extension.
+The extension is intentionally focused on readability. It does not provide completion, linting, formatting, or class sorting, and is designed to work alongside the official Tailwind CSS IntelliSense extension.
 
 ## Supported class contexts
 
@@ -97,6 +115,10 @@ npm run package
 ```
 
 `npm run package` creates a VSIX for the current operating system and CPU architecture. The Package GitHub Actions workflow builds all six supported release targets.
+
+## Support
+
+For bugs, compatibility issues, or feature requests, open an issue in the GitHub repository. See `SUPPORT.md` for support scope.
 
 ## License
 

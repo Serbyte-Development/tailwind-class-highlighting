@@ -22,7 +22,6 @@ const result = spawnSync(
     'package',
     '--target',
     target,
-    '--allow-missing-repository',
     '--out',
     `dist/tailwind-class-highlighting-${target}.vsix`,
   ],

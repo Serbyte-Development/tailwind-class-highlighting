@@ -24,7 +24,7 @@ Verified 2026-08-11.
 
 - `scripts/package.mjs` maps the current host OS/architecture to a VS Code target and emits `dist/tailwind-class-highlighting-<target>.vsix`. (`scripts/package.mjs`)
 - Supported release targets are macOS x64/arm64, Windows x64/arm64, and Linux x64/arm64. (`scripts/package.mjs`, `.github/workflows/package.yml`)
-- `.vscodeignore` excludes source, tests, benchmarks, wiki, scripts, source maps, build config, lockfile, and generated VSIX files from the extension payload. (`.vscodeignore`)
+- `.vscodeignore` excludes source, tests, benchmarks, wiki, scripts, editor config, local secrets/environment files, source maps, build config, lockfile, and generated VSIX files from the extension payload. (`.vscodeignore`)
 
 ## CI
 
@@ -32,10 +32,12 @@ Verified 2026-08-11.
 - The Package workflow runs the same validation and native packaging across six GitHub-hosted OS/architecture runners on manual dispatch or `v*` tags, then uploads VSIX artifacts. (`.github/workflows/package.yml`)
 - The current workflows package artifacts but do not publish to the VS Code Marketplace or Open VSX. (`.github/workflows/package.yml`)
 
-## Release Identity Still Needed
+## Release Identity
 
-- `package.json` has publisher `serbyte` but currently no `repository`, `homepage`, `bugs`, or `icon` fields. (`package.json`)
-- No git remote is configured in the repository as of verification; public repo creation and publisher credentials are external release steps.
+- The extension ID is `serbytedevelopment.tailwind-class-highlighting`; `vsce` is authenticated locally for publisher `serbytedevelopment`. (`package.json`)
+- `package.json` includes the GitHub repository, homepage, issue tracker, and a 512x512 PNG Marketplace icon. (`package.json`, `images/icon.png`)
+- The GitHub remote is `Serbyte-Development/tailwind-class-highlighting`. Repository visibility and actual registry publication remain explicit launch steps rather than build steps.
+- The current workflows package release artifacts but do not automatically publish them. The first release can remain manual so Marketplace and Open VSX publication stay independently controlled. (`.github/workflows/package.yml`)
 
 ## Related
 
